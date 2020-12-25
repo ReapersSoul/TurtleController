@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="websocket">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../../Program Files/Java/jetty-distribution-9.4.35.v20201120/lib/websocket" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ideaLibSources/websocket-servlet-9.4.35.v20201120-sources.jar!/" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/../../../../Program Files/Java/jetty-distribution-9.4.35.v20201120/lib/websocket" recursive="false" />
+  </library>
+</component>
