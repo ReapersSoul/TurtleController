@@ -3,37 +3,30 @@ package TurtleController;
 import java.util.ArrayList;
 
 public class Inventory {
-    int x,y;
-    ArrayList<ArrayList<ItemSlot>> items;
+    int size;
+    ArrayList<ItemSlot> items;
 
     public Inventory(){
-        x=0;
-        y=0;
+        size=0;
     }
 
-    public Inventory(int vx,int vy){
-        x=vx;
-        y=vy;
+    public Inventory(int slots){
+        size=slots;
         items = new ArrayList<>();
-        items.ensureCapacity(vx);
-        for (ArrayList<ItemSlot> i:items) {
-            i=new ArrayList<>();
-            i.ensureCapacity(y);
-            for (ItemSlot j:i) {
-                j=new ItemSlot();
-            }
+        for (int i=0;i<size;i++){
+            items.add(new ItemSlot());
         }
     }
 
-    public void SetSlot(int x, int y, int amount, Item item){
-        items.get(x).set(y,new ItemSlot(amount,item));
+    public void SetSlot(int slot, int amount, Item item){
+        items.set(slot,new ItemSlot(amount,item));
     }
-    public void SetSlot(int x, int y, ItemSlot itemSlot){
-        items.get(x).set(y,itemSlot);
+    public void SetSlot(int slot, ItemSlot itemSlot){
+        items.set(slot,itemSlot);
     }
 
-    public ItemSlot GetSlot(int x, int y){
-        return items.get(x).get(y);
+    public ItemSlot GetSlot(int slot){
+        return items.get(slot);
     }
 
 }

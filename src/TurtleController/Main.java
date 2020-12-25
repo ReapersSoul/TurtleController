@@ -20,6 +20,10 @@ public class Main extends Application {
     public static ArrayList<Turtle> turtles;
     public static int selectedTurtle;
     public static Server server;
+    public static boolean CTRLPRESSED;
+    public static boolean SHIFTPRESSED;
+    public static boolean SPACEPRESSED;
+
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -33,13 +37,64 @@ public class Main extends Application {
             @Override
             public void handle(KeyEvent event) {
                 System.out.println(event.getCode());
+                if (!turtles.isEmpty()) {
+                    switch (event.getCode()) {
+                        case W:
+                            turtles.get(selectedTurtle).forward();
+                            break;
+                        case S:
+                            turtles.get(selectedTurtle).back();
+                            break;
+                        case A:
+                            turtles.get(selectedTurtle).turnLeft();
+                            break;
+                        case D:
+                            turtles.get(selectedTurtle).turnRight();
+                            break;
+                        case SHIFT:
+                            SHIFTPRESSED = true;
+                            if (!CTRLPRESSED) {
+                                turtles.get(selectedTurtle).down();
+                            }
+                            break;
+                        case SPACE:
+                            SPACEPRESSED = true;
+                            if (!CTRLPRESSED) {
+                                turtles.get(selectedTurtle).up();
+                            }
+                            break;
+                        case CONTROL:
+                            CTRLPRESSED = true;
+                            break;
+                        case R:
+                            if (CTRLPRESSED) {
+                                if (SHIFTPRESSED) {
+                                    turtles.get(selectedTurtle).digDown();
+                                } else if (SPACEPRESSED) {
+                                    turtles.get(selectedTurtle).digUp();
+                                }
+                            } else {
+                                turtles.get(selectedTurtle).dig();
+                            }
+                            break;
+                    }
+                }
+            }
+        });
+        scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                System.out.println(event.getCode());
                 switch (event.getCode()) {
-                    case W:    turtles.get(selectedTurtle).forward(); break;
-                    case S:  turtles.get(selectedTurtle).back(); break;
-                    case A:  turtles.get(selectedTurtle).turnLeft(); break;
-                    case D: turtles.get(selectedTurtle).turnRight(); break;
-                    case SHIFT: turtles.get(selectedTurtle).down(); break;
-                    case SPACE: turtles.get(selectedTurtle).up(); break;
+                    case SHIFT:
+                        SHIFTPRESSED=false;
+                        break;
+                    case SPACE:
+                        SPACEPRESSED=false;
+                        break;
+                    case CONTROL:
+                        CTRLPRESSED = false;
+                        break;
                 }
             }
         });

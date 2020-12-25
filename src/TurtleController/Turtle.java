@@ -3,6 +3,7 @@ package TurtleController;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -35,12 +36,30 @@ public class Turtle {
     Stack<JSONArray> messages;
 
     public Turtle(){
-        inv = new Inventory(4,4);
+        inv = new Inventory(16);
         x=0;
         y=0;
         z=0;
         dir=Direction.North;
         messages=new Stack<>();
+    }
+
+    public Inventory GetInv(){
+        return inv;
+    }
+
+    void UpdateInv(){
+        for(int i=0;i<17;i++) {
+            Object tmp =getItemDetail(i+1,true);
+            if(tmp.getClass()==JSONArray.class) {
+                if (((JSONArray)tmp).get(0).getClass() == JSONObject.class) {
+                    JSONObject obj = (JSONObject) ((JSONArray)tmp).get(0);
+                    System.out.println(obj);
+                    //inv.GetSlot(i).item.ID= (String) tmp.get("name");
+                }
+            }
+
+        }
     }
 
     JSONArray forward() {
@@ -129,30 +148,30 @@ public class Turtle {
         }
     }
 
-    JSONArray dig(Side side) {
-        JSONArray ret =SendFunction("");
+    JSONArray dig() {
+        JSONArray ret =SendFunction("turtle.dig()");
         if (ret!=null) {
-
+            UpdateInv();
             return ret;
         } else {
             return null;
         }
     }
 
-    JSONArray digUp(Side side) {
-        JSONArray ret =SendFunction("");
+    JSONArray digUp() {
+        JSONArray ret =SendFunction("turtle.digUp()");
         if (ret!=null) {
-
+            UpdateInv();
             return ret;
         } else {
             return null;
         }
     }
 
-    JSONArray digDown(Side side) {
-        JSONArray ret =SendFunction("");
+    JSONArray digDown() {
+        JSONArray ret =SendFunction("turtle.digDown()");
         if (ret!=null) {
-
+            UpdateInv();
             return ret;
         } else {
             return null;
@@ -240,7 +259,7 @@ public class Turtle {
     }
 
     JSONArray getItemSpace(int slot) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("getItemSpace("+String.valueOf(slot)+")");
         if (ret!=null) {
 
             return ret;
@@ -404,7 +423,7 @@ public class Turtle {
     }
 
     JSONArray getSelectedSlot() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("turtle.getSelectedSlot()");
         if (ret!=null) {
 
             return ret;
@@ -474,9 +493,9 @@ public class Turtle {
     }
 
     JSONArray getItemDetail(int slot, boolean detailed) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("turtle.getItemDetail("+String.valueOf(slot)+","+String.valueOf(detailed)+")");
         if (ret!=null) {
-
+            System.out.println(ret.toJSONString());
             return ret;
         } else {
             return null;

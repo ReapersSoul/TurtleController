@@ -110,7 +110,9 @@ public class Controller {
 
     public void TabSwitch(Event e){
         try {
-            UpdateUI();
+            if (!Main.turtles.isEmpty()) {
+                UpdateUI();
+            }
         } catch (FileNotFoundException fileNotFoundException) {
             fileNotFoundException.printStackTrace();
         }
@@ -137,7 +139,7 @@ public class Controller {
         Slot14.setImage(image);
         Slot15.setImage(image);
 
-        SlotText0.setText("0");
+        SlotText0.setText(String.valueOf(Main.turtles.get(Main.selectedTurtle).GetInv().GetSlot(0).count));
         SlotText0.setStyle("-fx-font: 24 arial;");
         SlotText1.setText("0");
         SlotText1.setStyle("-fx-font: 24 arial;");
