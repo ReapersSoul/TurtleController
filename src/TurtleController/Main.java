@@ -11,6 +11,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.websocket.server.WebSocketHandler;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class Main extends Application {
@@ -20,9 +21,8 @@ public class Main extends Application {
     public static ArrayList<Turtle> turtles;
     public static int selectedTurtle;
     public static Server server;
-    public static boolean CTRLPRESSED;
-    public static boolean SHIFTPRESSED;
-    public static boolean SPACEPRESSED;
+    public static Controller controller;
+    public static Scene scene;
 
 
     @Override
@@ -30,76 +30,15 @@ public class Main extends Application {
         turtles =new ArrayList<>();
         selectedTurtle=0;
 
-        Parent root = FXMLLoader.load(getClass().getResource("fxml_Files/Main.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("fxml_Files/Main.fxml"));
+        controller = new Controller();
+        loader.setController(controller);
+        Parent root = loader.load();
         primaryStage.setTitle("Turtle Controller");
-        Scene scene=new Scene(root, 1280, 720);
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                System.out.println(event.getCode());
-                if (!turtles.isEmpty()) {
-                    switch (event.getCode()) {
-                        case W:
-                            turtles.get(selectedTurtle).forward();
-                            break;
-                        case S:
-                            turtles.get(selectedTurtle).back();
-                            break;
-                        case A:
-                            turtles.get(selectedTurtle).turnLeft();
-                            break;
-                        case D:
-                            turtles.get(selectedTurtle).turnRight();
-                            break;
-                        case SHIFT:
-                            SHIFTPRESSED = true;
-                            if (!CTRLPRESSED) {
-                                turtles.get(selectedTurtle).down();
-                            }
-                            break;
-                        case SPACE:
-                            SPACEPRESSED = true;
-                            if (!CTRLPRESSED) {
-                                turtles.get(selectedTurtle).up();
-                            }
-                            break;
-                        case CONTROL:
-                            CTRLPRESSED = true;
-                            break;
-                        case R:
-                            if (CTRLPRESSED) {
-                                if (SHIFTPRESSED) {
-                                    turtles.get(selectedTurtle).digDown();
-                                } else if (SPACEPRESSED) {
-                                    turtles.get(selectedTurtle).digUp();
-                                }
-                            } else {
-                                turtles.get(selectedTurtle).dig();
-                            }
-                            break;
-                    }
-                }
-            }
-        });
-        scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                System.out.println(event.getCode());
-                switch (event.getCode()) {
-                    case SHIFT:
-                        SHIFTPRESSED=false;
-                        break;
-                    case SPACE:
-                        SPACEPRESSED=false;
-                        break;
-                    case CONTROL:
-                        CTRLPRESSED = false;
-                        break;
-                }
-            }
-        });
+        scene=new Scene(root, 1280, 720);
         primaryStage.setScene(scene);
         primaryStage.show();
+        controller.init();
         server = new Server(port);
         WebSocketHandler wsHandler = new WebSocketHandler() {
             @Override

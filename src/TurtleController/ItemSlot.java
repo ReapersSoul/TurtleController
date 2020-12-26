@@ -17,12 +17,12 @@ public class ItemSlot {
     int count;
 
     public ItemSlot(){
-        item=new Item();
+        item=new Item("empty");
         count=0;
     }
 
-    public ItemSlot(int vcount,Item vitem){
-        item=vitem;
+    public ItemSlot(int vcount,String id){
+        item= new Item(id);
         count=vcount;
     }
 

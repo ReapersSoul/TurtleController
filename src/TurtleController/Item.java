@@ -1,11 +1,22 @@
 package TurtleController;
 
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class Item {
     String ID;
-    Color color;
+    Image icon;
     boolean IsBlock;
+
+    Item(String id){
+            ID = id;
+            icon = IconGetter.GetIcon(id);
+            IsBlock = false;
+    }
+
+    public Image getIcon() {
+            return icon;
+    }
 
     public String getID() {
         return ID;
@@ -13,14 +24,7 @@ public class Item {
 
     public void setID(String ID) {
         this.ID = ID;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
+        this.icon=IconGetter.GetIcon(ID);
     }
 
     public boolean isBlock() {

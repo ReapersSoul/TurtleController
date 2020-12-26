@@ -18,8 +18,8 @@ public class Inventory {
         }
     }
 
-    public void SetSlot(int slot, int amount, Item item){
-        items.set(slot,new ItemSlot(amount,item));
+    public void SetSlot(int slot, int amount, String id){
+        items.set(slot,new ItemSlot(amount,id));
     }
     public void SetSlot(int slot, ItemSlot itemSlot){
         items.set(slot,itemSlot);

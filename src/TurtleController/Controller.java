@@ -19,6 +19,7 @@ import javafx.scene.text.Text;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 public class Controller {
 
@@ -26,7 +27,6 @@ public class Controller {
     public TextField ConsoleInput;
     @FXML
     public VBox Log;
-
     @FXML
     public Canvas worldView;
 
@@ -95,6 +95,137 @@ public class Controller {
     @FXML
     public Text SlotText15;
 
+    ArrayList<ImageView> slotsIcons;
+    ArrayList<Text> slotsText;
+
+    public static boolean CTRLPRESSED;
+    public static boolean SHIFTPRESSED;
+    public static boolean SPACEPRESSED;
+
+    public void init(){
+        try {
+            IconGetter.Init("src/TurtleController/assets");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        slotsIcons = new ArrayList<>();
+        slotsText = new ArrayList<>();
+
+        slotsIcons.add(Slot0);
+        slotsIcons.add(Slot1);
+        slotsIcons.add(Slot2);
+        slotsIcons.add(Slot3);
+        slotsIcons.add(Slot4);
+        slotsIcons.add(Slot5);
+        slotsIcons.add(Slot6);
+        slotsIcons.add(Slot7);
+        slotsIcons.add(Slot8);
+        slotsIcons.add(Slot9);
+        slotsIcons.add(Slot10);
+        slotsIcons.add(Slot11);
+        slotsIcons.add(Slot12);
+        slotsIcons.add(Slot13);
+        slotsIcons.add(Slot14);
+        slotsIcons.add(Slot15);
+
+        slotsText.add(SlotText0);
+        slotsText.add(SlotText1);
+        slotsText.add(SlotText2);
+        slotsText.add(SlotText3);
+        slotsText.add(SlotText4);
+        slotsText.add(SlotText5);
+        slotsText.add(SlotText6);
+        slotsText.add(SlotText7);
+        slotsText.add(SlotText8);
+        slotsText.add(SlotText9);
+        slotsText.add(SlotText10);
+        slotsText.add(SlotText11);
+        slotsText.add(SlotText12);
+        slotsText.add(SlotText13);
+        slotsText.add(SlotText14);
+        slotsText.add(SlotText15);
+
+        Main.scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                System.out.println(event.getCode());
+                if (!Main.turtles.isEmpty()) {
+                    switch (event.getCode()) {
+                        case W:
+                            Main.turtles.get(Main.selectedTurtle).forward();
+                            break;
+                        case S:
+                            Main.turtles.get(Main.selectedTurtle).back();
+                            break;
+                        case A:
+                            Main.turtles.get(Main.selectedTurtle).turnLeft();
+                            break;
+                        case D:
+                            Main.turtles.get(Main.selectedTurtle).turnRight();
+                            break;
+                        case SHIFT:
+                            SHIFTPRESSED = true;
+                            if (!CTRLPRESSED) {
+                                Main.turtles.get(Main.selectedTurtle).down();
+                            }
+                            break;
+                        case SPACE:
+                            SPACEPRESSED = true;
+                            if (!CTRLPRESSED) {
+                                Main.turtles.get(Main.selectedTurtle).up();
+                            }
+                            break;
+                        case CONTROL:
+                            CTRLPRESSED = true;
+                            break;
+                        case R:
+                            try {
+                                UpdateUI();
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            if (CTRLPRESSED) {
+                                if (SHIFTPRESSED) {
+                                    Main.turtles.get(Main.selectedTurtle).digDown(Turtle.Side.Left);
+                                } else if (SPACEPRESSED) {
+                                    Main.turtles.get(Main.selectedTurtle).digUp(Turtle.Side.Left);
+                                }
+                            } else {
+                                Main.turtles.get(Main.selectedTurtle).dig(Turtle.Side.Left);
+                            }
+                            break;
+                        case L:
+                            TurtleRoutine.Dance(Main.turtles.get(Main.selectedTurtle),1);
+                            break;
+                    }
+                }
+            }
+        });
+        Main.scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                System.out.println(event.getCode());
+                switch (event.getCode()) {
+                    case SHIFT:
+                        SHIFTPRESSED=false;
+                        break;
+                    case SPACE:
+                        SPACEPRESSED=false;
+                        break;
+                    case CONTROL:
+                        CTRLPRESSED = false;
+                        break;
+                }
+            }
+        });
+        try {
+            UpdateUI();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void ExecuteFunction(ActionEvent e) {
         if (!Main.turtles.isEmpty()) {
             Text tmp=new Text(Main.turtles.get(Main.selectedTurtle).SendFunction(ConsoleInput.getText()).toJSONString());
@@ -110,67 +241,24 @@ public class Controller {
 
     public void TabSwitch(Event e){
         try {
-            if (!Main.turtles.isEmpty()) {
+
                 UpdateUI();
-            }
         } catch (FileNotFoundException fileNotFoundException) {
             fileNotFoundException.printStackTrace();
         }
     }
 
     public void UpdateUI() throws FileNotFoundException {
-        //Creating an image
-        Image image = new Image(new FileInputStream("src/TurtleController/assets/items/arrow.png"));
+        if (!Main.turtles.isEmpty()) {
+        Main.turtles.get(Main.selectedTurtle).UpdateInv();
 
-        Slot0.setImage(image);
-        Slot1.setImage(image);
-        Slot2.setImage(image);
-        Slot3.setImage(image);
-        Slot4.setImage(image);
-        Slot5.setImage(image);
-        Slot6.setImage(image);
-        Slot7.setImage(image);
-        Slot8.setImage(image);
-        Slot9.setImage(image);
-        Slot10.setImage(image);
-        Slot11.setImage(image);
-        Slot12.setImage(image);
-        Slot13.setImage(image);
-        Slot14.setImage(image);
-        Slot15.setImage(image);
+            for (int i = 0; i < 16; i++) {
+                slotsIcons.get(i).setImage(Main.turtles.get(Main.selectedTurtle).GetInv().GetSlot(i).getItem().getIcon());
 
-        SlotText0.setText(String.valueOf(Main.turtles.get(Main.selectedTurtle).GetInv().GetSlot(0).count));
-        SlotText0.setStyle("-fx-font: 24 arial;");
-        SlotText1.setText("0");
-        SlotText1.setStyle("-fx-font: 24 arial;");
-        SlotText2.setText("0");
-        SlotText2.setStyle("-fx-font: 24 arial;");
-        SlotText3.setText("0");
-        SlotText3.setStyle("-fx-font: 24 arial;");
-        SlotText4.setText("0");
-        SlotText4.setStyle("-fx-font: 24 arial;");
-        SlotText5.setText("0");
-        SlotText5.setStyle("-fx-font: 24 arial;");
-        SlotText6.setText("0");
-        SlotText6.setStyle("-fx-font: 24 arial;");
-        SlotText7.setText("0");
-        SlotText7.setStyle("-fx-font: 24 arial;");
-        SlotText8.setText("0");
-        SlotText8.setStyle("-fx-font: 24 arial;");
-        SlotText9.setText("0");
-        SlotText9.setStyle("-fx-font: 24 arial;");
-        SlotText10.setText("0");
-        SlotText10.setStyle("-fx-font: 24 arial;");
-        SlotText11.setText("0");
-        SlotText11.setStyle("-fx-font: 24 arial;");
-        SlotText12.setText("0");
-        SlotText12.setStyle("-fx-font: 24 arial;");
-        SlotText13.setText("0");
-        SlotText13.setStyle("-fx-font: 24 arial;");
-        SlotText14.setText("0");
-        SlotText14.setStyle("-fx-font: 24 arial;");
-        SlotText15.setText("0");
-        SlotText15.setStyle("-fx-font: 24 arial;");
+                slotsText.get(i).setText(String.valueOf(Main.turtles.get(Main.selectedTurtle).GetInv().GetSlot(i).count));
+                slotsText.get(i).setStyle("-fx-font: 24 arial;");
+            }
+        }
 
         GraphicsContext context = worldView.getGraphicsContext2D();
         context.setFill(Color.YELLOW);

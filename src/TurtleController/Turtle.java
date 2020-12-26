@@ -49,13 +49,14 @@ public class Turtle {
     }
 
     void UpdateInv(){
-        for(int i=0;i<17;i++) {
+        for(int i=0;i<16;i++) {
             Object tmp =getItemDetail(i+1,true);
             if(tmp.getClass()==JSONArray.class) {
                 if (((JSONArray)tmp).get(0).getClass() == JSONObject.class) {
                     JSONObject obj = (JSONObject) ((JSONArray)tmp).get(0);
                     System.out.println(obj);
-                    //inv.GetSlot(i).item.ID= (String) tmp.get("name");
+                    inv.GetSlot(i).count=Math.toIntExact((long)obj.get("count"));
+                    inv.GetSlot(i).item=new Item((String) obj.get("name"));
                 }
             }
 
@@ -148,8 +149,8 @@ public class Turtle {
         }
     }
 
-    JSONArray dig() {
-        JSONArray ret =SendFunction("turtle.dig()");
+    JSONArray dig(Side side) {
+        JSONArray ret =SendFunction("turtle.dig("+side.toString()+")");
         if (ret!=null) {
             UpdateInv();
             return ret;
@@ -158,8 +159,8 @@ public class Turtle {
         }
     }
 
-    JSONArray digUp() {
-        JSONArray ret =SendFunction("turtle.digUp()");
+    JSONArray digUp(Side side) {
+        JSONArray ret =SendFunction("turtle.digUp("+side.toString()+")");
         if (ret!=null) {
             UpdateInv();
             return ret;
@@ -168,8 +169,8 @@ public class Turtle {
         }
     }
 
-    JSONArray digDown() {
-        JSONArray ret =SendFunction("turtle.digDown()");
+    JSONArray digDown(Side side) {
+        JSONArray ret =SendFunction("turtle.digDown("+side.toString()+")");
         if (ret!=null) {
             UpdateInv();
             return ret;
@@ -179,8 +180,13 @@ public class Turtle {
     }
 
     JSONArray place(String text) {
-        JSONArray ret =SendFunction("");
-        if (ret!=null) {
+        JSONArray ret;
+        if (text == null) {
+            ret = SendFunction("place()");
+        } else {
+            ret = SendFunction("place(" + text + ")");
+        }
+        if (ret != null) {
 
             return ret;
         } else {
@@ -189,7 +195,12 @@ public class Turtle {
     }
 
     JSONArray placeUp(String text) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret;
+        if (text == null) {
+            ret = SendFunction("placeUp()");
+        } else {
+            ret = SendFunction("placeUp(" + text + ")");
+        }
         if (ret!=null) {
 
             return ret;
@@ -199,7 +210,12 @@ public class Turtle {
     }
 
     JSONArray placeDown(String text) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret;
+        if (text == null) {
+            ret = SendFunction("placeDown()");
+        } else {
+            ret = SendFunction("placeDown(" + text + ")");
+        }
         if (ret!=null) {
 
             return ret;
@@ -209,7 +225,7 @@ public class Turtle {
     }
 
     JSONArray drop(int count) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("drop("+String.valueOf(count)+")");
         if (ret!=null) {
 
             return ret;
@@ -219,7 +235,7 @@ public class Turtle {
     }
 
     JSONArray dropUp(int count) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("dropUp("+String.valueOf(count)+")");
         if (ret!=null) {
 
             return ret;
@@ -229,7 +245,7 @@ public class Turtle {
     }
 
     JSONArray dropDown(int count) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("dropDown("+String.valueOf(count)+")");
         if (ret!=null) {
 
             return ret;
@@ -239,7 +255,7 @@ public class Turtle {
     }
 
     JSONArray select(int slot) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("select("+String.valueOf(slot)+")");
         if (ret!=null) {
 
             return ret;
@@ -249,7 +265,7 @@ public class Turtle {
     }
 
     JSONArray getItemCount(int slot) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("getItemCount("+String.valueOf(slot)+")");
         if (ret!=null) {
 
             return ret;
@@ -269,7 +285,7 @@ public class Turtle {
     }
 
     JSONArray detect() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("detect()");
         if (ret!=null) {
 
             return ret;
@@ -279,7 +295,7 @@ public class Turtle {
     }
 
     JSONArray detectUp() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("detectUp()");
         if (ret!=null) {
 
             return ret;
@@ -289,7 +305,7 @@ public class Turtle {
     }
 
     JSONArray detectDown() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("detectDown()");
         if (ret!=null) {
 
             return ret;
@@ -299,7 +315,7 @@ public class Turtle {
     }
 
     JSONArray compare() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("compare()");
         if (ret!=null) {
 
             return ret;
@@ -309,7 +325,7 @@ public class Turtle {
     }
 
     JSONArray compareUp() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("compareUp()");
         if (ret!=null) {
 
             return ret;
@@ -319,7 +335,7 @@ public class Turtle {
     }
 
     JSONArray compareDown() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("compareDown()");
         if (ret!=null) {
 
             return ret;
@@ -329,7 +345,7 @@ public class Turtle {
     }
 
     JSONArray attack(Side side) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("attack("+side.toString()+")");
         if (ret!=null) {
 
             return ret;
@@ -339,7 +355,7 @@ public class Turtle {
     }
 
     JSONArray attackUp(Side side) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("attackUp("+side.toString()+")");
         if (ret!=null) {
 
             return ret;
@@ -349,7 +365,7 @@ public class Turtle {
     }
 
     JSONArray attackDown(Side side) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("attackDown("+side.toString()+")");
         if (ret!=null) {
 
             return ret;
@@ -359,7 +375,7 @@ public class Turtle {
     }
 
     JSONArray suck(int count) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("suck("+String.valueOf(count)+")");
         if (ret!=null) {
 
             return ret;
@@ -369,7 +385,7 @@ public class Turtle {
     }
 
     JSONArray suckUp(int count) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("suckUp("+String.valueOf(count)+")");
         if (ret!=null) {
 
             return ret;
@@ -379,7 +395,7 @@ public class Turtle {
     }
 
     JSONArray suckDown(int count) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("suckDown("+String.valueOf(count)+")");
         if (ret!=null) {
 
             return ret;
@@ -393,7 +409,7 @@ public class Turtle {
     }
 
     JSONArray refuel(int count) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("refuel("+String.valueOf(count)+")");
         if (ret!=null) {
 
             return ret;
@@ -403,7 +419,7 @@ public class Turtle {
     }
 
     JSONArray compareTo(int slot) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("compareTo("+String.valueOf(slot)+")");
         if (ret!=null) {
 
             return ret;
@@ -413,7 +429,7 @@ public class Turtle {
     }
 
     JSONArray transferTo(int slot, int count) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("transferTo("+String.valueOf(slot)+","+String.valueOf(count)+")");
         if (ret!=null) {
 
             return ret;
@@ -433,7 +449,7 @@ public class Turtle {
     }
 
     JSONArray getFuelLimit() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("getFuelLimit()");
         if (ret!=null) {
 
             return ret;
@@ -443,7 +459,7 @@ public class Turtle {
     }
 
     JSONArray equipLeft() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("equipLeft()");
         if (ret!=null) {
 
             return ret;
@@ -453,7 +469,7 @@ public class Turtle {
     }
 
     JSONArray equipRight() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("equipRight()");
         if (ret!=null) {
 
             return ret;
@@ -463,7 +479,7 @@ public class Turtle {
     }
 
     JSONArray inspect() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("inspect()");
         if (ret!=null) {
 
             return ret;
@@ -473,7 +489,7 @@ public class Turtle {
     }
 
     JSONArray inspectUp() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("inspectUp()");
         if (ret!=null) {
 
             return ret;
@@ -483,7 +499,7 @@ public class Turtle {
     }
 
     JSONArray inspectDown() {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("inspectDown()");
         if (ret!=null) {
 
             return ret;
@@ -503,7 +519,7 @@ public class Turtle {
     }
 
     JSONArray craft(int limit) {
-        JSONArray ret =SendFunction("");
+        JSONArray ret =SendFunction("craft("+String.valueOf(limit)+")");
         if (ret!=null) {
 
             return ret;
