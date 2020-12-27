@@ -3,16 +3,16 @@ package TurtleController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import javafx.scene.shape.CullFace;
+import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
 import javafx.scene.image.ImageView;
 
@@ -37,8 +37,6 @@ public class Controller {
     public TextField ConsoleInput;
     @FXML
     public VBox Log;
-    @FXML
-    public Canvas worldView;
 
     @FXML
     public ImageView Slot0;
@@ -106,6 +104,11 @@ public class Controller {
     public Text SlotText15;
     @FXML
     public VBox ScriptView;
+    public SubScene worldView;
+    @FXML
+    public AnchorPane anchorPane;
+
+    public Group worldSpace;
 
     ArrayList<ImageView> slotsIcons;
     ArrayList<Text> slotsText;
@@ -113,6 +116,9 @@ public class Controller {
     public static boolean CTRLPRESSED;
     public static boolean SHIFTPRESSED;
     public static boolean SPACEPRESSED;
+
+    Matrix3D<Block> World;
+    Camera camera;
 
     public static String path="src/TurtleController/assets";
 
@@ -122,6 +128,8 @@ public class Controller {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+        World = new Matrix3D<>(20,20,20,new Block());
 
         slotsIcons = new ArrayList<>();
         slotsText = new ArrayList<>();
@@ -230,17 +238,61 @@ public class Controller {
             }
         });
 
+        worldSpace=new Group();
+        worldView = new SubScene(worldSpace,200,200);
+        camera =new PerspectiveCamera();
+        worldView.setId("wv");
+        worldView.setCamera(camera);
+        anchorPane.getChildren().add(worldView);
+
         tabs.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
             @Override
             public void changed(ObservableValue<? extends Tab> observable, Tab oldTab, Tab newTab) {
                 if(newTab.equals (worldViewTab)) {
-                    GraphicsContext context = worldView.getGraphicsContext2D();
-                    context.setFill(Color.YELLOW);
-                    context.fillRect(
-                            0,
-                            0,
-                            worldView.getWidth(),
-                            worldView.getHeight());
+                    //Drawing Sphere1
+                    Sphere sphere1 = new Sphere();
+
+                    //Setting the radius of the Sphere
+                    sphere1.setRadius(50.0);
+
+                    //Setting the position of the sphere
+                    sphere1.setTranslateX(100);
+                    sphere1.setTranslateY(150);
+
+                    //setting the cull face of the sphere to front
+                    sphere1.setCullFace(CullFace.FRONT);
+
+                    //Drawing Sphere2
+                    Sphere sphere2 = new Sphere();
+
+                    //Setting the radius of the Sphere
+                    sphere2.setRadius(50.0);
+
+                    //Setting the position of the sphere
+                    sphere2.setTranslateX(300);
+                    sphere2.setTranslateY(150);
+
+                    //Setting the cull face of the sphere to back
+                    sphere2.setCullFace(CullFace.BACK);
+
+                    //Drawing Sphere3
+                    Sphere sphere3 = new Sphere();
+
+                    //Setting the radius of the Sphere
+                    sphere3.setRadius(50.0);
+
+                    //Setting the position of the sphere
+                    sphere3.setTranslateX(500);
+                    sphere3.setTranslateY(150);
+
+                    //Setting the cull face of the sphere to none
+                    sphere2.setCullFace(CullFace.NONE);
+                    worldSpace.getChildren().add(sphere1);
+                    worldSpace.getChildren().add(sphere2);
+                    worldSpace.getChildren().add(sphere3);
+
+                    camera.setRotate(45);
+
                 }else if(newTab.equals(interfaceTab)){
                     updateInv();
                 }else if(newTab.equals(scriptsTab)){

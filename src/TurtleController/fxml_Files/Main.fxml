@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
@@ -8,6 +7,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -19,7 +19,7 @@
   <tabs>
     <Tab fx:id="worldViewTab" text="World View">
          <content>
-            <Canvas fx:id="worldView" height="370.0" width="600.0" />
+            <AnchorPane fx:id="anchorPane" prefHeight="200.0" prefWidth="200.0" />
          </content></Tab>
     <Tab fx:id="interfaceTab" text="Interface">
          <content>

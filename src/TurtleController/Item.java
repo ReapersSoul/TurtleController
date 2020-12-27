@@ -1,7 +1,6 @@
 package TurtleController;
 
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 
 public class Item {
     String ID;
