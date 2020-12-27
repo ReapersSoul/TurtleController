@@ -15,13 +15,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<TabPane fx:id="tabs" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
   <tabs>
-    <Tab text="World View">
+    <Tab fx:id="worldViewTab" text="World View">
          <content>
             <Canvas fx:id="worldView" height="370.0" width="600.0" />
          </content></Tab>
-    <Tab onSelectionChanged="#TabSwitch" text="Interface">
+    <Tab fx:id="interfaceTab" text="Interface">
          <content>
             <SplitPane dividerPositions="0.5">
                <items>
@@ -154,7 +154,7 @@
                </items>
             </SplitPane>
          </content></Tab>
-      <Tab text="scripts">
+      <Tab fx:id="scriptsTab" text="scripts">
          <content>
             <VBox fx:id="ScriptView" prefHeight="200.0" prefWidth="100.0" />
          </content>

@@ -1,28 +1,37 @@
 package TurtleController;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 
 import java.io.*;
 import java.util.ArrayList;
 
 public class Controller {
+
+    @FXML
+    public TabPane tabs;
+
+    @FXML
+    public Tab worldViewTab;
+
+    @FXML
+    public Tab interfaceTab;
+
+    @FXML
+    public Tab scriptsTab;
 
     @FXML
     public TextField ConsoleInput;
@@ -185,11 +194,6 @@ public class Controller {
                             CTRLPRESSED = true;
                             break;
                         case R:
-                            try {
-                                UpdateUI();
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
                             if (CTRLPRESSED) {
                                 if (SHIFTPRESSED) {
                                     Main.turtles.get(Main.selectedTurtle).digDown(Turtle.Side.Left);
@@ -199,6 +203,7 @@ public class Controller {
                             } else {
                                 Main.turtles.get(Main.selectedTurtle).dig(Turtle.Side.Left);
                             }
+                            updateInv();
                             break;
                         case L:
                             TurtleRoutine.Dance(Main.turtles.get(Main.selectedTurtle));
@@ -224,10 +229,36 @@ public class Controller {
                 }
             }
         });
-        try {
-            UpdateUI();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+
+        tabs.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+            @Override
+            public void changed(ObservableValue<? extends Tab> observable, Tab oldTab, Tab newTab) {
+                if(newTab.equals (worldViewTab)) {
+                    GraphicsContext context = worldView.getGraphicsContext2D();
+                    context.setFill(Color.YELLOW);
+                    context.fillRect(
+                            0,
+                            0,
+                            worldView.getWidth(),
+                            worldView.getHeight());
+                }else if(newTab.equals(interfaceTab)){
+                    updateInv();
+                }else if(newTab.equals(scriptsTab)){
+                    UpdateScriptList();
+                }
+            }
+        });
+    }
+    public void updateInv(){
+        if (!Main.turtles.isEmpty()) {
+            Main.turtles.get(Main.selectedTurtle).UpdateInv();
+
+            for (int i = 0; i < 16; i++) {
+                slotsIcons.get(i).setImage(Main.turtles.get(Main.selectedTurtle).GetInv().GetSlot(i).getItem().getIcon());
+
+                slotsText.get(i).setText(String.valueOf(Main.turtles.get(Main.selectedTurtle).GetInv().GetSlot(i).count));
+                slotsText.get(i).setStyle("-fx-font: 24 arial;");
+            }
         }
     }
 
@@ -236,20 +267,7 @@ public class Controller {
             Text tmp=new Text(Main.turtles.get(Main.selectedTurtle).SendFunction(ConsoleInput.getText()).toJSONString());
             tmp.setStyle("-fx-font: 24 arial;");
             Log.getChildren().addAll(tmp);
-            try {
-                UpdateUI();
-            } catch (FileNotFoundException fileNotFoundException) {
-                fileNotFoundException.printStackTrace();
-            }
-        }
-    }
-
-    public void TabSwitch(Event e){
-        try {
-
-                UpdateUI();
-        } catch (FileNotFoundException fileNotFoundException) {
-            fileNotFoundException.printStackTrace();
+            updateInv();
         }
     }
 
@@ -268,7 +286,7 @@ public class Controller {
         //List of all the text files
         File filesList[] = directoryPath.listFiles(textFilefilter);
 
-
+        ScriptView.getChildren().clear();
         for (int i = 0; i < filesList.length; i++) {
             HBox holder=new HBox();
 
@@ -289,27 +307,5 @@ public class Controller {
             ScriptView.getChildren().add(holder);
         }
 
-    }
-
-    public void UpdateUI() throws FileNotFoundException {
-        UpdateScriptList();
-        if (!Main.turtles.isEmpty()) {
-        Main.turtles.get(Main.selectedTurtle).UpdateInv();
-
-            for (int i = 0; i < 16; i++) {
-                slotsIcons.get(i).setImage(Main.turtles.get(Main.selectedTurtle).GetInv().GetSlot(i).getItem().getIcon());
-
-                slotsText.get(i).setText(String.valueOf(Main.turtles.get(Main.selectedTurtle).GetInv().GetSlot(i).count));
-                slotsText.get(i).setStyle("-fx-font: 24 arial;");
-            }
-        }
-
-        GraphicsContext context = worldView.getGraphicsContext2D();
-        context.setFill(Color.YELLOW);
-        context.fillRect(
-                0,
-                0,
-                worldView.getWidth(),
-                worldView.getHeight());
     }
 }
