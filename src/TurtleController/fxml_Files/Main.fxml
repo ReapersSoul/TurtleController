@@ -154,5 +154,10 @@
                </items>
             </SplitPane>
          </content></Tab>
+      <Tab text="scripts">
+         <content>
+            <VBox fx:id="ScriptView" prefHeight="200.0" prefWidth="100.0" />
+         </content>
+      </Tab>
   </tabs>
 </TabPane>

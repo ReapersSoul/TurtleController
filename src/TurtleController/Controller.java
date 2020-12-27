@@ -6,8 +6,10 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -17,8 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class Controller {
@@ -94,6 +95,8 @@ public class Controller {
     public Text SlotText14;
     @FXML
     public Text SlotText15;
+    @FXML
+    public VBox ScriptView;
 
     ArrayList<ImageView> slotsIcons;
     ArrayList<Text> slotsText;
@@ -101,6 +104,8 @@ public class Controller {
     public static boolean CTRLPRESSED;
     public static boolean SHIFTPRESSED;
     public static boolean SPACEPRESSED;
+
+    public static String path="src/TurtleController/assets";
 
     public void init(){
         try {
@@ -196,7 +201,7 @@ public class Controller {
                             }
                             break;
                         case L:
-                            TurtleRoutine.Dance(Main.turtles.get(Main.selectedTurtle),1);
+                            TurtleRoutine.Dance(Main.turtles.get(Main.selectedTurtle));
                             break;
                     }
                 }
@@ -248,7 +253,46 @@ public class Controller {
         }
     }
 
+    public void UpdateScriptList(){
+        File directoryPath = new File(path+"/LuaScripts");
+        FileFilter textFilefilter = new FileFilter(){
+            public boolean accept(File file) {
+                boolean isFile = file.isFile();
+                if (isFile) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        };
+        //List of all the text files
+        File filesList[] = directoryPath.listFiles(textFilefilter);
+
+
+        for (int i = 0; i < filesList.length; i++) {
+            HBox holder=new HBox();
+
+            Text filename=new Text();
+            filename.setText(filesList[i].getName());
+            holder.getChildren().add(filename);
+            Button btn=new Button();
+            btn.setText("Execute");
+            int finalI = i;
+            btn.setOnAction(e->{
+                try {
+                    TurtleRoutine.sendLuaScriptFromFile(Main.turtles.get(Main.selectedTurtle),filesList[finalI]);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            });
+            holder.getChildren().add(btn);
+            ScriptView.getChildren().add(holder);
+        }
+
+    }
+
     public void UpdateUI() throws FileNotFoundException {
+        UpdateScriptList();
         if (!Main.turtles.isEmpty()) {
         Main.turtles.get(Main.selectedTurtle).UpdateInv();
 

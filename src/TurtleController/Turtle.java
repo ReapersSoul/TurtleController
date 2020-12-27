@@ -54,7 +54,6 @@ public class Turtle {
             if(tmp.getClass()==JSONArray.class) {
                 if (((JSONArray)tmp).get(0).getClass() == JSONObject.class) {
                     JSONObject obj = (JSONObject) ((JSONArray)tmp).get(0);
-                    System.out.println(obj);
                     inv.GetSlot(i).count=Math.toIntExact((long)obj.get("count"));
                     inv.GetSlot(i).item=new Item((String) obj.get("name"));
                 }
@@ -511,7 +510,6 @@ public class Turtle {
     JSONArray getItemDetail(int slot, boolean detailed) {
         JSONArray ret =SendFunction("turtle.getItemDetail("+String.valueOf(slot)+","+String.valueOf(detailed)+")");
         if (ret!=null) {
-            System.out.println(ret.toJSONString());
             return ret;
         } else {
             return null;
@@ -531,23 +529,66 @@ public class Turtle {
     JSONArray SendFunction(String funct){
         try {
             if(!funct.isEmpty()) {
+                session.getRemote().sendString("function");
                 session.getRemote().sendString(funct);
 
-                synchronized (this) {
-                    while (messages.Size() < 1) {
-                        try {
-                            this.wait(10);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                if (WaitTimeout(1000 * 3)) {
+                    JSONArray tmp =new JSONArray();
+                    tmp.add("Timed Out!");
+                    return tmp;
+                } else {
+                    return messages.Pop();
                 }
-                return messages.Pop();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    JSONArray SendScript(String script){
+        try {
+            if(!script.isEmpty()) {
+                session.getRemote().sendString("script");
+                session.getRemote().sendString(script);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    boolean TimeoutOccured=false;
+
+    void WaitInf(){
+        synchronized (this) {
+            while (messages.Size() < 1) {
+                try {
+                    this.wait(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    boolean WaitTimeout(int miliseconds){
+        synchronized (this) {
+            int loops=0;
+            while (messages.Size() < 1 && loops<=miliseconds) {
+                try {
+                    this.wait(1);
+                    loops++;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (loops>=miliseconds){
+                TimeoutOccured=true;
+                return true;
+            }else{
+                return false;
+            }
+        }
     }
 
     Session session;
@@ -572,10 +613,15 @@ public class Turtle {
     @OnWebSocketMessage
     public void onMessage(String message) {
         System.out.println("Message: " + message);
+        System.out.println("\n");
         JSONParser parser =new JSONParser();
         try {
-            messages.Push((JSONArray) parser.parse(message));
-        } catch (ParseException e) {
+            if (!TimeoutOccured) {
+                messages.Push((JSONArray) parser.parse(message));
+            }else{
+                TimeoutOccured=false;
+            }
+        }catch (ParseException e) {
             e.printStackTrace();
         }
         //SendFunction("Server: "+message);
