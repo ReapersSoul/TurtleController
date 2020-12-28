@@ -22,6 +22,7 @@ import javafx.scene.text.Text;
 import javafx.scene.image.ImageView;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import org.json.simple.JSONObject;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -123,7 +124,8 @@ public class Controller {
     public static boolean SHIFTPRESSED;
     public static boolean SPACEPRESSED;
 
-    Matrix3D<Block> World;
+    World world;
+
     Group group;
     Camera camera;
     Rotate yRotate;
@@ -140,8 +142,6 @@ public class Controller {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
-        World = new Matrix3D<>(2,1,2,new Block());
 
         slotsIcons = new ArrayList<>();
         slotsText = new ArrayList<>();
@@ -180,6 +180,8 @@ public class Controller {
         slotsText.add(SlotText14);
         slotsText.add(SlotText15);
 
+        world=new World();
+
         group=new Group();
         worldView =new SubScene(group,anchorPane.getWidth(),anchorPane.getHeight(),true,
                 SceneAntialiasing.BALANCED);
@@ -209,27 +211,41 @@ public class Controller {
                 //if (!Main.turtles.isEmpty()) {
                     switch (event.getCode()) {
                         case W:
+                            RemoveTurtle();
                             Main.turtles.get(Main.selectedTurtle).forward();
+                            AddTurtle();
+                            BlockCheck();
                             break;
                         case S:
+                            RemoveTurtle();
                             Main.turtles.get(Main.selectedTurtle).back();
+                            AddTurtle();
+                            BlockCheck();
                             break;
                         case A:
                             Main.turtles.get(Main.selectedTurtle).turnLeft();
+                            BlockCheck();
                             break;
                         case D:
                             Main.turtles.get(Main.selectedTurtle).turnRight();
+                            BlockCheck();
                             break;
                         case SHIFT:
                             SHIFTPRESSED = true;
                             if (!CTRLPRESSED) {
+                                RemoveTurtle();
                                 Main.turtles.get(Main.selectedTurtle).down();
+                                AddTurtle();
+                                BlockCheck();
                             }
                             break;
                         case SPACE:
                             SPACEPRESSED = true;
                             if (!CTRLPRESSED) {
+                                RemoveTurtle();
                                 Main.turtles.get(Main.selectedTurtle).up();
+                                AddTurtle();
+                                BlockCheck();
                             }
                             break;
                         case CONTROL:
@@ -245,6 +261,7 @@ public class Controller {
                             } else {
                                 Main.turtles.get(Main.selectedTurtle).dig(Turtle.Side.Left);
                             }
+                            BlockCheck();
                             UpdateInv();
                             break;
                         case L:
@@ -287,22 +304,32 @@ public class Controller {
                 }
             }
         });
+
+//        Block b1 =new Block();
+//        b1.SetXYZ(0,0,0);
+//        b1.setColor(Color.WHITE);
+//        b1.setTex(IconGetter.GetIcon("minecraft:dirt"));
+//        Block b2 =new Block();
+//        b2.SetXYZ(-1,0,0);
+//        b2.setColor(Color.WHITE);
+//        b2.setTex(IconGetter.GetIcon("minecraft:dirt"));
+//        Block b3 =new Block();
+//        b3.SetXYZ(1,0,0);
+//        b3.setColor(Color.WHITE);
+//        b3.setTex(IconGetter.GetIcon("minecraft:dirt"));
+//
+//        world.setAddBlock(b1);
+//        world.setAddBlock(b2);
+//        world.setAddBlock(b3);
+
+
         UpdateWorldView();
     }
 
     public void UpdateWorldView(){
         group.getChildren().clear();
-        for (int i = 0; i < World.getX(); i++) {
-            for (int j = 0; j < World.getY(); j++) {
-                for (int k = 0; k < World.getZ(); k++) {
-                    Box box =new Box(1,1,1);
-                    box.setMaterial(new PhongMaterial(Color.RED));
-                    box.setTranslateX(i);
-                    box.setTranslateY(j);
-                    box.setTranslateZ(k);
-                    group.getChildren().add(box);
-                }
-            }
+        for (Box b: world.getWorld()) {
+            group.getChildren().add(b);
         }
 
         camera.setNearClip(.1);
@@ -311,6 +338,34 @@ public class Controller {
         setCamPivot(0,0,0);
         setCamOffset(0,0,-20);
 
+    }
+
+    public void RemoveTurtle(){
+        world.removeBlockAt(Main.turtles.get(Main.selectedTurtle).getX(),Main.turtles.get(Main.selectedTurtle).getY(),Main.turtles.get(Main.selectedTurtle).getZ());
+    }
+
+    public void AddTurtle(){
+        pivot.setX(Main.turtles.get(Main.selectedTurtle).getX());
+        pivot.setY(Main.turtles.get(Main.selectedTurtle).getY());
+        pivot.setZ(Main.turtles.get(Main.selectedTurtle).getZ());
+
+
+        Block b=new Block();
+        b.setColor(Color.YELLOW);
+        b.SetXYZ(Main.turtles.get(Main.selectedTurtle).getX(),Main.turtles.get(Main.selectedTurtle).getY(),Main.turtles.get(Main.selectedTurtle).getZ());
+        world.setAddBlock(b);
+    }
+
+    public void BlockCheck(){
+        Object obj=Main.turtles.get(Main.selectedTurtle).inspect().get(1);
+        if (obj.getClass()==JSONObject.class){
+        JSONObject blockDat =(JSONObject)obj;
+        Block b=new Block();
+        b.setColor(Color.WHITE);
+        b.setTex(IconGetter.GetIcon(blockDat.get("name").toString()));
+        b.SetXYZ(Main.turtles.get(Main.selectedTurtle).getBlockInFront().getX(),Main.turtles.get(Main.selectedTurtle).getBlockInFront().getY(),Main.turtles.get(Main.selectedTurtle).getBlockInFront().getZ());
+        world.setAddBlock(b);
+        }
     }
 
     public void setCamPivot(int x,int y,int z){

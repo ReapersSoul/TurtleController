@@ -1,11 +1,21 @@
 package TurtleController;
 
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class Block {
     int x,y,z;
     String ID;
+    Image Tex;
     Color color;
+
+    public Image getTex() {
+        return Tex;
+    }
+
+    public void setTex(Image tex) {
+        Tex = tex;
+    }
 
     public void SetXYZ(int vx,int vy,int vz){
         x=vx;
