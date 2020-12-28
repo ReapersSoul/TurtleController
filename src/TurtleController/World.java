@@ -34,7 +34,10 @@ public class World {
         }
     }
     public void removeBlockAt(int x,int y,int z){
-
+        Integer blockPos = BlockIndex(x,y,z);
+        if (blockPos!=null){
+            WorldData.remove(blockPos);
+        }
     }
     public Block getBlockAt(int x,int y,int z){
         Integer blockPos = BlockIndex(x,y,z);

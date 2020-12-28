@@ -215,20 +215,24 @@ public class Controller {
                             Main.turtles.get(Main.selectedTurtle).forward();
                             AddTurtle();
                             BlockCheck();
+                            UpdateWorldView();
                             break;
                         case S:
                             RemoveTurtle();
                             Main.turtles.get(Main.selectedTurtle).back();
                             AddTurtle();
                             BlockCheck();
+                            UpdateWorldView();
                             break;
                         case A:
                             Main.turtles.get(Main.selectedTurtle).turnLeft();
                             BlockCheck();
+                            UpdateWorldView();
                             break;
                         case D:
                             Main.turtles.get(Main.selectedTurtle).turnRight();
                             BlockCheck();
+                            UpdateWorldView();
                             break;
                         case SHIFT:
                             SHIFTPRESSED = true;
@@ -237,6 +241,7 @@ public class Controller {
                                 Main.turtles.get(Main.selectedTurtle).down();
                                 AddTurtle();
                                 BlockCheck();
+                                UpdateWorldView();
                             }
                             break;
                         case SPACE:
@@ -246,6 +251,7 @@ public class Controller {
                                 Main.turtles.get(Main.selectedTurtle).up();
                                 AddTurtle();
                                 BlockCheck();
+                                UpdateWorldView();
                             }
                             break;
                         case CONTROL:
@@ -262,6 +268,7 @@ public class Controller {
                                 Main.turtles.get(Main.selectedTurtle).dig(Turtle.Side.Left);
                             }
                             BlockCheck();
+                            UpdateWorldView();
                             UpdateInv();
                             break;
                         case L:
@@ -322,7 +329,9 @@ public class Controller {
 //        world.setAddBlock(b2);
 //        world.setAddBlock(b3);
 
-
+        setCamPivot(0,0,0);
+        camera.setNearClip(.1);
+        camera.setFarClip(1000);
         UpdateWorldView();
     }
 
@@ -331,13 +340,6 @@ public class Controller {
         for (Box b: world.getWorld()) {
             group.getChildren().add(b);
         }
-
-        camera.setNearClip(.1);
-        camera.setFarClip(1000);
-
-        setCamPivot(0,0,0);
-        setCamOffset(0,0,-20);
-
     }
 
     public void RemoveTurtle(){
@@ -348,7 +350,6 @@ public class Controller {
         pivot.setX(Main.turtles.get(Main.selectedTurtle).getX());
         pivot.setY(Main.turtles.get(Main.selectedTurtle).getY());
         pivot.setZ(Main.turtles.get(Main.selectedTurtle).getZ());
-
 
         Block b=new Block();
         b.setColor(Color.YELLOW);
