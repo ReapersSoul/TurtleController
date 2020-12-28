@@ -29,13 +29,13 @@ public class Matrix3D<T> {
     int My;
     int Mz;
 
-    int getX() {
+    public int getX() {
         return Mx;
     }
-    int getY() {
+    public int getY() {
         return My;
     }
-    int getZ() {
+    public int getZ() {
         return Mz;
     }
 
@@ -94,6 +94,7 @@ public class Matrix3D<T> {
                 }
             }
         }
+        Mz =z;
     }
 
     void Resize(int x, int y,int z) {

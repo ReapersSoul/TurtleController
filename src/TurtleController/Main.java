@@ -23,6 +23,8 @@ public class Main extends Application {
     public static Server server;
     public static Controller controller;
     public static Scene scene;
+public static int Width=1080;
+public static int Height=720;
 
 
     @Override
@@ -35,7 +37,7 @@ public class Main extends Application {
         loader.setController(controller);
         Parent root = loader.load();
         primaryStage.setTitle("Turtle Controller");
-        scene=new Scene(root, 1280, 720);
+        scene=new Scene(root, Width, Height);
         primaryStage.setScene(scene);
         primaryStage.show();
         controller.init();

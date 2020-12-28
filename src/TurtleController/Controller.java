@@ -5,19 +5,27 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Box;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
 import javafx.scene.image.ImageView;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Controller {
 
@@ -108,8 +116,6 @@ public class Controller {
     @FXML
     public AnchorPane anchorPane;
 
-    public Group worldSpace;
-
     ArrayList<ImageView> slotsIcons;
     ArrayList<Text> slotsText;
 
@@ -118,7 +124,13 @@ public class Controller {
     public static boolean SPACEPRESSED;
 
     Matrix3D<Block> World;
+    Group group;
     Camera camera;
+    Rotate yRotate;
+    Rotate xRotate;
+    Rotate zRotate;
+    Translate pivot;
+    Translate camOffset;
 
     public static String path="src/TurtleController/assets";
 
@@ -129,7 +141,7 @@ public class Controller {
             e.printStackTrace();
         }
 
-        World = new Matrix3D<>(20,20,20,new Block());
+        World = new Matrix3D<>(2,1,2,new Block());
 
         slotsIcons = new ArrayList<>();
         slotsText = new ArrayList<>();
@@ -168,11 +180,33 @@ public class Controller {
         slotsText.add(SlotText14);
         slotsText.add(SlotText15);
 
+        group=new Group();
+        worldView =new SubScene(group,anchorPane.getWidth(),anchorPane.getHeight(),true,
+                SceneAntialiasing.BALANCED);
+        camera =new PerspectiveCamera(true);
+        pivot = new Translate(0,0,0);
+        camOffset=new Translate(0,0,-20);
+        yRotate = new Rotate(0, Rotate.Y_AXIS);
+        xRotate = new Rotate(camOffset.getZ(), Rotate.X_AXIS);
+        zRotate = new Rotate(0, Rotate.Z_AXIS);
+        camera.getTransforms().addAll (
+                pivot,
+                yRotate,
+                xRotate,
+                zRotate,
+                camOffset
+        );
+        worldView.setId("wv");
+        worldView.setCamera(camera);
+        anchorPane.getChildren().add(worldView);
+        //worldView.translateXProperty().setValue(anchorPane.getWidth()/2);
+        //worldView.translateYProperty().setValue(anchorPane.getHeight()/2);
+
         Main.scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 System.out.println(event.getCode());
-                if (!Main.turtles.isEmpty()) {
+                //if (!Main.turtles.isEmpty()) {
                     switch (event.getCode()) {
                         case W:
                             Main.turtles.get(Main.selectedTurtle).forward();
@@ -211,13 +245,16 @@ public class Controller {
                             } else {
                                 Main.turtles.get(Main.selectedTurtle).dig(Turtle.Side.Left);
                             }
-                            updateInv();
+                            UpdateInv();
                             break;
                         case L:
                             TurtleRoutine.Dance(Main.turtles.get(Main.selectedTurtle));
                             break;
+                        case G:
+                            addRotateCamera(0,2f,0);
+                            break;
                     }
-                }
+               // }
             }
         });
         Main.scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -238,70 +275,73 @@ public class Controller {
             }
         });
 
-        worldSpace=new Group();
-        worldView = new SubScene(worldSpace,200,200);
-        camera =new PerspectiveCamera();
-        worldView.setId("wv");
-        worldView.setCamera(camera);
-        anchorPane.getChildren().add(worldView);
-
         tabs.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
             @Override
             public void changed(ObservableValue<? extends Tab> observable, Tab oldTab, Tab newTab) {
                 if(newTab.equals (worldViewTab)) {
-                    //Drawing Sphere1
-                    Sphere sphere1 = new Sphere();
-
-                    //Setting the radius of the Sphere
-                    sphere1.setRadius(50.0);
-
-                    //Setting the position of the sphere
-                    sphere1.setTranslateX(100);
-                    sphere1.setTranslateY(150);
-
-                    //setting the cull face of the sphere to front
-                    sphere1.setCullFace(CullFace.FRONT);
-
-                    //Drawing Sphere2
-                    Sphere sphere2 = new Sphere();
-
-                    //Setting the radius of the Sphere
-                    sphere2.setRadius(50.0);
-
-                    //Setting the position of the sphere
-                    sphere2.setTranslateX(300);
-                    sphere2.setTranslateY(150);
-
-                    //Setting the cull face of the sphere to back
-                    sphere2.setCullFace(CullFace.BACK);
-
-                    //Drawing Sphere3
-                    Sphere sphere3 = new Sphere();
-
-                    //Setting the radius of the Sphere
-                    sphere3.setRadius(50.0);
-
-                    //Setting the position of the sphere
-                    sphere3.setTranslateX(500);
-                    sphere3.setTranslateY(150);
-
-                    //Setting the cull face of the sphere to none
-                    sphere2.setCullFace(CullFace.NONE);
-                    worldSpace.getChildren().add(sphere1);
-                    worldSpace.getChildren().add(sphere2);
-                    worldSpace.getChildren().add(sphere3);
-
-                    camera.setRotate(45);
-
+                    UpdateWorldView();
                 }else if(newTab.equals(interfaceTab)){
-                    updateInv();
+                    UpdateInv();
                 }else if(newTab.equals(scriptsTab)){
                     UpdateScriptList();
                 }
             }
         });
+        UpdateWorldView();
     }
-    public void updateInv(){
+
+    public void UpdateWorldView(){
+        group.getChildren().clear();
+        for (int i = 0; i < World.getX(); i++) {
+            for (int j = 0; j < World.getY(); j++) {
+                for (int k = 0; k < World.getZ(); k++) {
+                    Box box =new Box(1,1,1);
+                    box.setMaterial(new PhongMaterial(Color.RED));
+                    box.setTranslateX(i);
+                    box.setTranslateY(j);
+                    box.setTranslateZ(k);
+                    group.getChildren().add(box);
+                }
+            }
+        }
+
+        camera.setNearClip(.1);
+        camera.setFarClip(1000);
+
+        setCamPivot(0,0,0);
+        setCamOffset(0,0,-20);
+
+    }
+
+    public void setCamPivot(int x,int y,int z){
+        pivot.setX(x);
+        pivot.setY(y);
+        pivot.setZ(z);
+    }
+
+    public void setCamOffset(double x,double y, double z){
+        camOffset.setX(x);
+        camOffset.setY(y);
+        camOffset.setZ(z);
+        xRotate.setAngle(camOffset.getZ());
+    }
+
+    public void rotateCamera(float x,float y,float z){
+        xRotate.angleProperty().setValue(x);
+        yRotate.angleProperty().setValue(y);
+        zRotate.angleProperty().setValue(z);
+    }
+
+    public void addRotateCamera(float x,float y,float z){
+        xRotate.angleProperty().setValue(xRotate.angleProperty().get()+x);
+        yRotate.angleProperty().setValue(yRotate.angleProperty().get()+y);
+        zRotate.angleProperty().setValue(zRotate.angleProperty().get()+z);
+    }
+
+
+
+
+    public void UpdateInv(){
         if (!Main.turtles.isEmpty()) {
             Main.turtles.get(Main.selectedTurtle).UpdateInv();
 
@@ -319,7 +359,7 @@ public class Controller {
             Text tmp=new Text(Main.turtles.get(Main.selectedTurtle).SendFunction(ConsoleInput.getText()).toJSONString());
             tmp.setStyle("-fx-font: 24 arial;");
             Log.getChildren().addAll(tmp);
-            updateInv();
+            UpdateInv();
         }
     }
 
